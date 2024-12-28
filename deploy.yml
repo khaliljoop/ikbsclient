@@ -1,0 +1,49 @@
+name: Build Flutter Application
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: cirrusci/flutter:latest
+        options: --privileged
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android
+        run: flutter build apk --release
+
+      - name: Upload Android Build
+        uses: actions/upload-artifact@v2
+        with:
+          name: android-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS
+        run: flutter build ios --release
+
+      - name: Upload iOS Build
+        uses: actions/upload-artifact@v2
+        with:
+          name: ios-release
+          path: build/ios/iphoneos/Runner.app
